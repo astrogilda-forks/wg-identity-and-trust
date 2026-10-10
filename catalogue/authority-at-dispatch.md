@@ -10,9 +10,9 @@ Every trace submitted for this comparison writes:
 "contractId": "https://probityai.github.io/agent-evidence-observer/contract/authority-at-dispatch/v1"
 ```
 
-A reader refuses a trace that omits the identifier or names another version. A change to the required meaning of any field is a new version. The fields and their required meaning are in [CONTRACT.md](https://github.com/probityai/agent-evidence-observer/blob/728de6a1ed5e6d11a0ee6688514c07716030ecfd/interop/authority-unreachable-2026-10-03/CONTRACT.md).
+A reader refuses a trace that omits the identifier or names another version. A change to the required meaning of any field is a new version. The fields and their required meaning are in [CONTRACT.md](https://github.com/probityai/agent-evidence-observer/blob/c897659ba452bd2fc5a080531aa5bfadb72ad529/interop/authority-unreachable-2026-10-03/CONTRACT.md).
 
-Authority evidence carries `evidenceAgeSeconds` (decision time minus the signed observation time) and `freshnessLimitSeconds` (the deployed limit), as Imran Siddique asked on the list on 3 October. A field a trace leaves unfilled is marked `not_applicable`, `not_emitted` or `not_measured`, kept apart as he asked on 6 October.
+Authority evidence carries `evidenceAgeSeconds` (decision time minus the signed observation time) and `freshnessLimitSeconds` (the deployed limit), which Imran Siddique asked the comparison to retain on 3 October ([message 26](https://lists.aaif.io/g/wg-identity-trust/message/26)). A field a trace leaves unfilled is marked `not_applicable`, `not_emitted` or `not_measured`, kept apart as he asked on 6 October.
 
 ## Cases
 
@@ -25,12 +25,14 @@ Authority evidence carries `evidenceAgeSeconds` (decision time minus the signed 
 | 5. Authority amplified across hops | Each hop's scope is a subset of the hop before | `delegation-hop-amplified` |
 | 6. Identity valid, authority expired | Grant expiry and the original deadline bound dispatch | `fallback-expired`, `late-approval-for-expired-request` |
 
+The six cases are the ones proposed in [message 14](https://lists.aaif.io/g/wg-identity-trust/message/14). Case 7 (the delegation chain as a surveillance graph) and case 8 (a revocation issued in error, or disputed) were added on 5 October ([message 32](https://lists.aaif.io/g/wg-identity-trust/message/32)) and have no reference case yet.
+
 ## Implementation rows
 
 | Implementation | Record | State |
 | --- | --- | --- |
 | MintID | Operator traces at `public-v2026-10-07` and `public-v2026-10-08.2`, and an independent testnet run of the same trace at `public-v2026-10-08.2` | Decisions measured; committed effect outside the implementation |
-| Proofable | `four-case-run-f92faf39a4ba` | Decisions measured; receipts private |
+| Proofable | `aaif-e1217327a-20261008` at `proofable/docs` `9851059` | Decisions measured; 11 disclosed envelopes verify from the published bytes |
 | Alakris | `aaif-publication-reference` `ebd9dcf` and its rerun of the reference cases | Reference cases reproduced; deployed path not measured |
 
 ## Running the check

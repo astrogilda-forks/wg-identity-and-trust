@@ -8,7 +8,7 @@ on:
 permissions:
   contents: read
 env:
-  OBSERVER_COMMIT: 728de6a1ed5e6d11a0ee6688514c07716030ecfd
+  OBSERVER_COMMIT: c897659ba452bd2fc5a080531aa5bfadb72ad529
 jobs:
   compare:
     runs-on: ubuntu-24.04

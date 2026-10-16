@@ -1,0 +1,33 @@
+name: Delegation lifecycle test cases
+on:
+  pull_request:
+    paths: ['test-cases/delegation-lifecycle/**', '.github/workflows/delegation-lifecycle.yml']
+  push:
+    branches: [main]
+    paths: ['test-cases/delegation-lifecycle/**', '.github/workflows/delegation-lifecycle.yml']
+permissions:
+  contents: read
+env:
+  # agent-evidence-vectors commit the cases were copied from; the verifier is
+  # installed at the same commit.
+  VECTORS_COMMIT: aeac3739bf1918b68c9a4848109817e54c1ea164
+  CORPUS_DIGEST: 9aad96e66aa811b5b582f492289e9b1f5abe1de1b35d33f12c6a913883c86d05
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6.5.0
+        with:
+          go-version: '1.24'
+          cache: false
+      - name: Install the pinned verifier
+        run: go install "github.com/probityai/agent-evidence-vectors/cmd/aee-verify@${VECTORS_COMMIT}"
+      - name: The cases are the ones published at the pinned commit
+        run: |
+          test "$(jq -r .corpusDigest test-cases/delegation-lifecycle/MANIFEST.json)" = "$CORPUS_DIGEST"
+      - name: Every case gets its expected outcome
+        run: '"$(go env GOPATH)/bin/aee-verify" test-cases/delegation-lifecycle'

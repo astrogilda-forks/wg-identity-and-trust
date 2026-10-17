@@ -8,9 +8,9 @@ on:
 permissions:
   contents: read
 env:
-  # agent-evidence-vectors commit the cases were copied from; the verifier is
-  # installed at the same commit.
-  VECTORS_COMMIT: aeac3739bf1918b68c9a4848109817e54c1ea164
+  # agent-evidence-vectors release the cases were copied from; the verifier is
+  # installed at the same release.
+  VECTORS_VERSION: v0.19.0
   CORPUS_DIGEST: 9aad96e66aa811b5b582f492289e9b1f5abe1de1b35d33f12c6a913883c86d05
 jobs:
   verify:
@@ -25,8 +25,8 @@ jobs:
           go-version: '1.24'
           cache: false
       - name: Install the pinned verifier
-        run: go install "github.com/probityai/agent-evidence-vectors/cmd/aee-verify@${VECTORS_COMMIT}"
-      - name: The cases are the ones published at the pinned commit
+        run: go install "github.com/probityai/agent-evidence-vectors/cmd/aee-verify@${VECTORS_VERSION}"
+      - name: The cases are the ones published in the pinned release
         run: |
           test "$(jq -r .corpusDigest test-cases/delegation-lifecycle/MANIFEST.json)" = "$CORPUS_DIGEST"
       - name: Every case gets its expected outcome

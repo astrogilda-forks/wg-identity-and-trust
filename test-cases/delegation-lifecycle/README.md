@@ -15,13 +15,13 @@ expected outcome and rule; `MANIFEST.json` holds the same outcomes for a
 program to read.
 
 The cases are copied byte for byte from
-[agent-evidence-vectors](https://github.com/probityai/agent-evidence-vectors/tree/aeac3739bf1918b68c9a4848109817e54c1ea164/vectors-delegation-lifecycle)
-at commit `aeac3739bf1918b68c9a4848109817e54c1ea164`. The [workflow](../../.github/workflows/delegation-lifecycle.yml)
-installs the verifier `aee-verify` pinned to that commit and checks that every
+[agent-evidence-vectors](https://github.com/probityai/agent-evidence-vectors/tree/v0.19.0/vectors-delegation-lifecycle)
+release `v0.19.0`. The [workflow](../../.github/workflows/delegation-lifecycle.yml)
+installs the verifier `aee-verify` pinned to that release and checks that every
 case gets its expected outcome. To run it yourself:
 
 ```sh
-go install github.com/probityai/agent-evidence-vectors/cmd/aee-verify@aeac3739bf1918b68c9a4848109817e54c1ea164
+go install github.com/probityai/agent-evidence-vectors/cmd/aee-verify@v0.19.0
 aee-verify test-cases/delegation-lifecycle
 ```
 

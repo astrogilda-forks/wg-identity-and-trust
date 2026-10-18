@@ -89,10 +89,10 @@ identifiers were registered to that entity with one software attestation digest.
 It carries the old identifier's adverse records forward and never a grant. These
 cases are not copied into this directory: the `recovery` job in the
 [workflow](../../.github/workflows/delegation-lifecycle.yml) fetches
-agent-evidence-vectors at commit `276ff5ec4fe153df66e601b62e7b6281cd93e625` and runs that commit's
-verifier over that commit's corpus. Their records, rules and expected outcomes
+agent-evidence-vectors at release v0.20.0 and runs that release's
+verifier over that release's corpus. Their records, rules and expected outcomes
 are in
-[INDEX.md at that commit](https://github.com/probityai/agent-evidence-vectors/blob/276ff5ec4fe153df66e601b62e7b6281cd93e625/vectors-delegation-lifecycle/INDEX.md#recovery-after-a-lost-or-compromised-key).
+[INDEX.md at that release](https://github.com/probityai/agent-evidence-vectors/blob/v0.20.0/vectors-delegation-lifecycle/INDEX.md#recovery-after-a-lost-or-compromised-key).
 
 | Case | Outcome | What it tests |
 | --- | --- | --- |
@@ -107,8 +107,8 @@ are in
 To run them yourself:
 
 ```sh
-go install github.com/probityai/agent-evidence-vectors/cmd/aee-verify@276ff5ec4fe153df66e601b62e7b6281cd93e625
-aee-verify "$(go mod download -json github.com/probityai/agent-evidence-vectors@276ff5ec4fe153df66e601b62e7b6281cd93e625 | jq -r .Dir)/vectors-delegation-lifecycle"
+go install github.com/probityai/agent-evidence-vectors/cmd/aee-verify@v0.20.0
+aee-verify "$(go mod download -json github.com/probityai/agent-evidence-vectors@v0.20.0 | jq -r .Dir)/vectors-delegation-lifecycle"
 ```
 
 ## Where the rules come from

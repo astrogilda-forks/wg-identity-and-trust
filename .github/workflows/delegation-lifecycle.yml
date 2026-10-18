@@ -31,3 +31,35 @@ jobs:
           test "$(jq -r .corpusDigest test-cases/delegation-lifecycle/MANIFEST.json)" = "$CORPUS_DIGEST"
       - name: Every case gets its expected outcome
         run: '"$(go env GOPATH)/bin/aee-verify" test-cases/delegation-lifecycle'
+  recovery:
+    # The recovery cases are not copied here. The job fetches the
+    # agent-evidence-vectors module at one commit and runs that commit's
+    # verifier over that commit's corpus, so the cases and the verifier
+    # always come from the same place.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      VECTORS_COMMIT: 276ff5ec4fe153df66e601b62e7b6281cd93e625
+      RECOVERY_CORPUS_DIGEST: f1ee714d62f7390376ca5732efcf2a4c551f2862052f762f48be5b148314cccd
+      RECOVERY_CASES: >-
+        recovery-regrant recovery-grant-not-carried recovery-registry-only
+        recovery-software-mismatch recovery-after-compromise-no-revival
+        recovery-after-compromise-regrant recovery-history-follows
+    steps:
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6.5.0
+        with:
+          go-version: '1.24'
+          cache: false
+      - name: Fetch the pinned verifier and corpus
+        run: |
+          go install "github.com/probityai/agent-evidence-vectors/cmd/aee-verify@${VECTORS_COMMIT}"
+          dir="$(go mod download -json "github.com/probityai/agent-evidence-vectors@${VECTORS_COMMIT}" | jq -r .Dir)"
+          echo "CORPUS_DIR=${dir}/vectors-delegation-lifecycle" >> "$GITHUB_ENV"
+      - name: The corpus is the one at the pinned commit, and it holds every recovery case
+        run: |
+          test "$(jq -r .corpusDigest "$CORPUS_DIR/MANIFEST.json")" = "$RECOVERY_CORPUS_DIGEST"
+          for id in $RECOVERY_CASES; do
+            jq -e --arg id "$id" '.vectors[] | select(.id == $id and .set == "recovery")' "$CORPUS_DIR/MANIFEST.json" > /dev/null
+          done
+      - name: Every case gets its expected outcome
+        run: '"$(go env GOPATH)/bin/aee-verify" "$CORPUS_DIR"'

@@ -79,6 +79,38 @@ An organisation grants authority to `agent-v1`, which is re-registered as
 | `rereg-old-presents-before-retirement` | accept | the old identifier presents after the link and before its retirement |
 | `rereg-revocation-follows-link` | reject | a revocation of the grant reaches the successor |
 
+## Recovery after a lost or compromised key (proposed)
+
+A link needs the old key's signature, so it cannot be made when that key is lost
+or compromised at redeployment ([issue 18](https://github.com/aaif/wg-identity-and-trust/issues/18)).
+These cases put that path in a separate record, the recovery record, which is
+signed by the registry and the Responsible entity and counts only when both
+identifiers were registered to that entity with one software attestation digest.
+It carries the old identifier's adverse records forward and never a grant. These
+cases are not copied into this directory: the `recovery` job in the
+[workflow](../../.github/workflows/delegation-lifecycle.yml) fetches
+agent-evidence-vectors at commit `276ff5ec4fe153df66e601b62e7b6281cd93e625` and runs that commit's
+verifier over that commit's corpus. Their records, rules and expected outcomes
+are in
+[INDEX.md at that commit](https://github.com/probityai/agent-evidence-vectors/blob/276ff5ec4fe153df66e601b62e7b6281cd93e625/vectors-delegation-lifecycle/INDEX.md#recovery-after-a-lost-or-compromised-key).
+
+| Case | Outcome | What it tests |
+| --- | --- | --- |
+| `recovery-regrant` | accept | after a recovery the issuer grants the new identifier again |
+| `recovery-grant-not-carried` | reject | the new identifier presents the old identifier's grant through a recovery |
+| `recovery-registry-only` | reject | a recovery signed by the registry and not the Responsible entity |
+| `recovery-software-mismatch` | reject | the two registrations carry different software attestation digests |
+| `recovery-after-compromise-no-revival` | reject | a recovery after a compromise revocation does not restore the revoked authority |
+| `recovery-after-compromise-regrant` | accept | a new grant after a compromise recovery, accepted with the compromise in the history |
+| `recovery-history-follows` | accept | an earlier revocation and its confirmed dispute resolve from the successor |
+
+To run them yourself:
+
+```sh
+go install github.com/probityai/agent-evidence-vectors/cmd/aee-verify@276ff5ec4fe153df66e601b62e7b6281cd93e625
+aee-verify "$(go mod download -json github.com/probityai/agent-evidence-vectors@276ff5ec4fe153df66e601b62e7b6281cd93e625 | jq -r .Dir)/vectors-delegation-lifecycle"
+```
+
 ## Where the rules come from
 
 Standing, cascade and irreversibility follow the

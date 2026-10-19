@@ -86,13 +86,15 @@ or compromised at redeployment ([issue 18](https://github.com/aaif/wg-identity-a
 These cases put that path in a separate record, the recovery record, which is
 signed by the registry and the Responsible entity and counts only when both
 identifiers were registered to that entity with one software attestation digest.
-It carries the old identifier's adverse records forward and never a grant. These
+It carries the old identifier's adverse records forward and never a grant. When
+a registration matches a retired agent and asks for no recovery, the registry
+records a succession on its own signature, with the same effect. These
 cases are not copied into this directory: the `recovery` job in the
 [workflow](../../.github/workflows/delegation-lifecycle.yml) fetches
-agent-evidence-vectors at release v0.20.0 and runs that release's
+agent-evidence-vectors at release v0.23.0 and runs that release's
 verifier over that release's corpus. Their records, rules and expected outcomes
 are in
-[INDEX.md at that release](https://github.com/probityai/agent-evidence-vectors/blob/v0.20.0/vectors-delegation-lifecycle/INDEX.md#recovery-after-a-lost-or-compromised-key).
+[INDEX.md at that release](https://github.com/probityai/agent-evidence-vectors/blob/v0.23.0/vectors-delegation-lifecycle/INDEX.md#recovery-after-a-lost-or-compromised-key).
 
 | Case | Outcome | What it tests |
 | --- | --- | --- |
@@ -103,12 +105,17 @@ are in
 | `recovery-after-compromise-no-revival` | reject | a recovery after a compromise revocation does not restore the revoked authority |
 | `recovery-after-compromise-regrant` | accept | a new grant after a compromise recovery, accepted with the compromise in the history |
 | `recovery-history-follows` | accept | an earlier revocation and its confirmed dispute resolve from the successor |
+| `recovery-unclaimed-succession` | accept | the registry records a succession for a re-registration that makes no recovery claim, and the history follows |
+| `recovery-unclaimed-unrecorded` | reject | the same re-registration with no succession record drops the history |
+| `recovery-new-agent-asserted` | accept | Proposed: the Responsible entity asserts the agent is new; the assertion is recorded and the history still follows, marked contested |
+| `recovery-successor-responsible` | accept | a successor Responsible entity signs the recovery under a recorded responsible succession |
+| `recovery-successor-responsible-unrecorded` | reject | the same recovery with no responsible-succession record |
 
 To run them yourself:
 
 ```sh
-go install github.com/probityai/agent-evidence-vectors/cmd/aee-verify@v0.20.0
-aee-verify "$(go mod download -json github.com/probityai/agent-evidence-vectors@v0.20.0 | jq -r .Dir)/vectors-delegation-lifecycle"
+go install github.com/probityai/agent-evidence-vectors/cmd/aee-verify@v0.23.0
+aee-verify "$(go mod download -json github.com/probityai/agent-evidence-vectors@v0.23.0 | jq -r .Dir)/vectors-delegation-lifecycle"
 ```
 
 ## Where the rules come from

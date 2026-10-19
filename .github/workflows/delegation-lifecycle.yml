@@ -39,12 +39,15 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     env:
-      RECOVERY_VECTORS_VERSION: v0.20.0
-      RECOVERY_CORPUS_DIGEST: f1ee714d62f7390376ca5732efcf2a4c551f2862052f762f48be5b148314cccd
+      RECOVERY_VECTORS_VERSION: v0.23.0
+      RECOVERY_CORPUS_DIGEST: 8595f5c79498d7f498b606bdf23bcc52fc6756b16bfab1a85188cfbbb3142f71
       RECOVERY_CASES: >-
         recovery-regrant recovery-grant-not-carried recovery-registry-only
         recovery-software-mismatch recovery-after-compromise-no-revival
         recovery-after-compromise-regrant recovery-history-follows
+        recovery-unclaimed-succession recovery-unclaimed-unrecorded
+        recovery-new-agent-asserted recovery-successor-responsible
+        recovery-successor-responsible-unrecorded
     steps:
       - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6.5.0
         with:

@@ -91,10 +91,10 @@ a registration matches a retired agent and asks for no recovery, the registry
 records a succession on its own signature, with the same effect. These
 cases are not copied into this directory: the `recovery` job in the
 [workflow](../../.github/workflows/delegation-lifecycle.yml) fetches
-agent-evidence-vectors at release v0.23.0 and runs that release's
+agent-evidence-vectors at release v0.24.0 and runs that release's
 verifier over that release's corpus. Their records, rules and expected outcomes
 are in
-[INDEX.md at that release](https://github.com/probityai/agent-evidence-vectors/blob/v0.23.0/vectors-delegation-lifecycle/INDEX.md#recovery-after-a-lost-or-compromised-key).
+[INDEX.md at that release](https://github.com/probityai/agent-evidence-vectors/blob/v0.24.0/vectors-delegation-lifecycle/INDEX.md#recovery-after-a-lost-or-compromised-key).
 
 | Case | Outcome | What it tests |
 | --- | --- | --- |
@@ -114,9 +114,31 @@ are in
 To run them yourself:
 
 ```sh
-go install github.com/probityai/agent-evidence-vectors/cmd/aee-verify@v0.23.0
-aee-verify "$(go mod download -json github.com/probityai/agent-evidence-vectors@v0.23.0 | jq -r .Dir)/vectors-delegation-lifecycle"
+go install github.com/probityai/agent-evidence-vectors/cmd/aee-verify@v0.24.0
+aee-verify "$(go mod download -json github.com/probityai/agent-evidence-vectors@v0.24.0 | jq -r .Dir)/vectors-delegation-lifecycle"
 ```
+
+## Sub-agents bound to the parent's lifespan (proposed)
+
+Use case B asks how succession interacts with sub-agents, whose identifiers are
+bound to the parent's lifespan. In these cases the registry registers a
+sub-agent with a `parent`, and the sub-agent ends when the registry retires or
+revokes that parent. A recovery or succession of the parent carries history,
+never the parent's grants or its sub-agents. The successor's new sub-agent holds
+authority only through new grants, follows the old sub-agent through a succession
+record as history only, and carries the history of its parent's predecessor. The
+`recovery` job runs them from the same release; their records and rules are in
+[INDEX.md at that release](https://github.com/probityai/agent-evidence-vectors/blob/v0.24.0/vectors-delegation-lifecycle/INDEX.md#sub-agents-bound-to-the-parents-lifespan).
+
+| Case | Outcome | What it tests |
+| --- | --- | --- |
+| `subagent-parent-active` | accept | a sub-agent holds its grant while its parent is active |
+| `subagent-parent-retired` | reject | the parent is retired and the sub-agent presents unrevoked grants |
+| `subagent-respawned-after-parent-recovery` | accept | after the parent's compromise recovery, the successor's new sub-agent holds new grants and carries the parent's history |
+| `subagent-not-carried-by-parent-recovery` | reject | the old sub-agent presents after its parent was recovered to a successor |
+| `subagent-succession-history-only` | accept | the old sub-agent's adverse records resolve from the new one through the registry's succession record |
+| `subagent-succession-grant-not-carried` | reject | the new sub-agent presents the grants made to the old one |
+| `subagent-respawn-unrecorded` | reject | a matching sub-agent registered under the successor with no succession record |
 
 ## Where the rules come from
 
